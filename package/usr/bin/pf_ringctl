@@ -4,7 +4,8 @@
 #
 
 DISTRO="unknown"
-if [ -f /lib/lsb/init-functions ]; then
+if grep -q 'ID_LIKE=debian\|ID=debian' /etc/os-release; then
+#if [ -f /lib/lsb/init-functions ]; then
 	DISTRO="debian"
 	. /lib/lsb/init-functions
 elif [ -f /etc/init.d/functions ]; then
