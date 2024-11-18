@@ -58,6 +58,7 @@
 #ifdef HAVE_NDPI
 #define PRINT_NDPI_INFO /* Note: this requires linking the nDPI library */
 #include "ndpi_api.h"
+//#define CUSTOM_NDPI
 #endif
 
 pfring *pd = NULL;
@@ -473,6 +474,10 @@ int main(int argc, char* argv[]) {
   pthread_t time_thread;
   u_int8_t ignore_hw_hash = 0;
   char *filter = NULL;
+#ifdef CUSTOM_NDPI
+  struct ndpi_detection_module_struct *ndpi_mod;
+  NDPI_PROTOCOL_BITMASK all;
+#endif
 
   while ((c = getopt(argc,argv,"c:dEf:g:hHi:p:qvF:s:S:tV7")) != '?') {
     if ((c == 255) || (c == -1)) break;
@@ -544,12 +549,14 @@ int main(int argc, char* argv[]) {
   if (device == NULL) device = DEFAULT_DEVICE;
   bind2node(bind_core);
 
+#ifndef CUSTOM_NDPI
   if (enable_l7)
     ft_flags |= PFRING_FT_TABLE_FLAGS_DPI;
 
 #ifdef PRINT_NDPI_INFO
   if (enable_l7_extra)
     ft_flags |= PFRING_FT_TABLE_FLAGS_DPI_EXTRA;
+#endif
 #endif
 
   if (ignore_hw_hash)
@@ -561,6 +568,18 @@ int main(int argc, char* argv[]) {
     fprintf(stderr, "pfring_ft_create_table error\n");
     return -1;
   }
+
+#ifdef CUSTOM_NDPI
+  if (enable_l7) {
+    ndpi_mod = ndpi_init_detection_module(NULL);
+    ndpi_set_config(ndpi_mod, NULL, "dpi.guess_on_giveup", "0");
+    NDPI_BITMASK_SET_ALL(all);
+    ndpi_set_protocol_detection_bitmask2(ndpi_mod, &all);
+    ndpi_finalize_initialization(ndpi_mod);
+
+    pfring_ft_set_ndpi_handle(ft, ndpi_mod);
+  }
+#endif
 
   if (slice_duration > 0)
     pfring_ft_flow_set_flow_slicing(ft, slice_duration);

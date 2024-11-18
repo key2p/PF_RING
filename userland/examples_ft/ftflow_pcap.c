@@ -50,6 +50,7 @@
 #ifdef HAVE_NDPI
 #define PRINT_NDPI_INFO /* Note: this requires linking the nDPI library */
 #include "ndpi_api.h"
+//#define CUSTOM_NDPI
 #endif
 
 pcap_t *pd = NULL;
@@ -200,8 +201,8 @@ void processFlow(pfring_ft_flow *flow, void *user){
   
     ndpi_init_serializer(&serializer, ndpi_serialization_format_json);
  
-    ndpi_proto.master_protocol = v->l7_protocol.master_protocol;
-    ndpi_proto.app_protocol = v->l7_protocol.app_protocol;
+    ndpi_proto.proto.master_protocol = v->l7_protocol.master_protocol;
+    ndpi_proto.proto.app_protocol = v->l7_protocol.app_protocol;
     ndpi_proto.category = v->l7_protocol.category;
  
     ndpi_flow2json(ndpi_struct, ndpi_flow,
@@ -272,7 +273,11 @@ int main(int argc, char* argv[]) {
   u_int32_t ft_flags = 0;
   char *categories_file = NULL;
   int rc; 
- 
+#ifdef CUSTOM_NDPI
+  struct ndpi_detection_module_struct *ndpi_mod;
+  NDPI_PROTOCOL_BITMASK all;
+#endif
+
   startTime.tv_sec = 0;
 
   while ((c = getopt(argc,argv,"c:dhi:vf:p:q7F:")) != '?') {
@@ -321,11 +326,13 @@ int main(int argc, char* argv[]) {
   }
 
   if (enable_l7) {
+#ifndef CUSTOM_NDPI
     ft_flags |= PFRING_FT_TABLE_FLAGS_DPI;
-    ft_flags |= PFRING_FT_DECODE_TUNNELS;
 #ifdef PRINT_NDPI_INFO
     ft_flags |= PFRING_FT_TABLE_FLAGS_DPI_EXTRA;
 #endif
+#endif
+    ft_flags |= PFRING_FT_DECODE_TUNNELS;
   }
 
   ft = pfring_ft_create_table(ft_flags, 0, 0, 0, 0);
@@ -334,6 +341,18 @@ int main(int argc, char* argv[]) {
     fprintf(stderr, "pfring_ft_create_table error\n");
     return -1;
   }
+
+#ifdef CUSTOM_NDPI
+  if (enable_l7) {
+    ndpi_mod = ndpi_init_detection_module(NULL);
+    ndpi_set_config(ndpi_mod, NULL, "dpi.guess_on_giveup", "0");
+    NDPI_BITMASK_SET_ALL(all);
+    ndpi_set_protocol_detection_bitmask2(ndpi_mod, &all);
+    ndpi_finalize_initialization(ndpi_mod);
+
+    pfring_ft_set_ndpi_handle(ft, ndpi_mod);
+  }
+#endif
 
   pfring_ft_set_flow_export_callback(ft, processFlow, NULL);
 
