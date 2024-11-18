@@ -248,6 +248,7 @@ void print_help(void) {
   printf("-h              Print help\n");
   printf("-i <device>     Device name or PCAP file\n");
   printf("-7              Enable L7 protocol detection (nDPI)\n");
+  printf("-N              Disable L7 protocol guess (nDPI)\n");
   printf("-F <file>       Load filtering/shunting rules from file\n");
   printf("-p <file>       Load nDPI custom protocols from file\n");
   printf("-c <file>       Load nDPI categories by host from file\n");
@@ -272,6 +273,7 @@ int main(int argc, char* argv[]) {
   struct bpf_program fcode;
   u_int32_t ft_flags = 0;
   char *categories_file = NULL;
+  int no_guess = 0;
   int rc; 
 #ifdef CUSTOM_NDPI
   struct ndpi_detection_module_struct *ndpi_mod;
@@ -280,7 +282,7 @@ int main(int argc, char* argv[]) {
 
   startTime.tv_sec = 0;
 
-  while ((c = getopt(argc,argv,"c:dhi:vf:p:q7F:")) != '?') {
+  while ((c = getopt(argc,argv,"c:dhi:vf:p:q7F:N")) != '?') {
     if ((c == 255) || (c == -1)) break;
 
     switch(c) {
@@ -313,6 +315,9 @@ int main(int argc, char* argv[]) {
     case '7':
       enable_l7 = 1;
       break;
+    case 'N':
+      no_guess = 1;
+      break;
     case 'F':
       enable_l7 = 1;
       configuration_file = strdup(optarg);
@@ -331,6 +336,8 @@ int main(int argc, char* argv[]) {
 #ifdef PRINT_NDPI_INFO
     ft_flags |= PFRING_FT_TABLE_FLAGS_DPI_EXTRA;
 #endif
+    if (no_guess)
+      ft_flags |= PFRING_FT_TABLE_FLAGS_NO_GUESS;
 #endif
     ft_flags |= PFRING_FT_DECODE_TUNNELS;
   }
