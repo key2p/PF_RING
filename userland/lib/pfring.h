@@ -399,6 +399,7 @@ struct __pfring {
 #define PF_RING_DISCARD_INJECTED_PKTS  (1 << 24) /**< pfring_open() flag: Discard packets injected through the stack module (this avoid loops in MITM applications) */
 #define PF_RING_ARISTA_TIMESTAMP       (1 << 25) /**< pfring_open() flag: Enable Arista 7150 hardware timestamp support and stripping */
 #define PF_RING_METAWATCH_TIMESTAMP    (1 << 26) /**< pfring_open() flag: Enable Arista 7130 MetaWatch hardware timestamp support and stripping */
+#define PF_RING_HW_TIMESTAMP_UNSYNC    (1 << 27) /**< pfring_open() flag: Do not set the hw clock when using PF_RING_HW_TIMESTAMP (e.g. use PTP) */
 
 /* ********************************* */
 
