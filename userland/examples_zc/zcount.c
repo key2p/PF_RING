@@ -176,6 +176,7 @@ void printHelp(void) {
   printf("-R              Test hw filters adding a rule (Intel 82599)\n");
   printf("-H              High stats refresh rate (workaround for drop counter on 1G Intel cards)\n");
   printf("-X              Enable hardware timestamp (when supported)\n");
+  printf("-U              Do not set the hardware clock when using -X (e.g. when using PTP)\n");
   printf("-s <time>       Set hardware timestamp (when supported). Format example: '2022-09-23 14:30:55.123456789'\n");
   printf("-d <nsec>       Adjust hardware timestamp using a signed nsec delta (when supported)'\n");
   printf("-S <core id>    Pulse-time thread for inter-packet time check\n");
@@ -285,7 +286,7 @@ int main(int argc, char* argv[]) {
 
   flags = PF_RING_ZC_DEVICE_CAPTURE_INJECTED;
 
-  while((c = getopt(argc,argv,"ac:d:f:g:hi:v:CDMRHs:S:TtX")) != '?') {
+  while((c = getopt(argc,argv,"ac:d:f:g:hi:v:CDMRHs:S:TtUX")) != '?') {
     if((c == 255) || (c == -1)) break;
 
     switch(c) {
@@ -346,6 +347,9 @@ int main(int argc, char* argv[]) {
       break;
     case 'X':
       flags |= PF_RING_ZC_DEVICE_HW_TIMESTAMP;
+      break;
+    case 'U':
+      flags |= PF_RING_ZC_DEVICE_HW_TIMESTAMP_UNSYNC;
       break;
     }
   }
