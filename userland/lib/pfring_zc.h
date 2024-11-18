@@ -36,6 +36,7 @@
 #define PF_RING_ZC_DEVICE_ARISTA_TIMESTAMP    (1 << 11) /**< pfring_zc_open_device() flag: extract Arista 7150 series timestamp from packet */
 #define PF_RING_ZC_DEVICE_METAWATCH_TIMESTAMP (1 << 11) /**< pfring_zc_open_device() flag: extract Arista Metawatch timestamp from packet */
 #define PF_RING_ZC_DEVICE_CAPTURE_INJECTED    (1 << 12) /**< pfring_zc_open_device() flag: capture also injected packets (see PF_RING_DISCARD_INJECTED_PKTS) */
+#define PF_RING_ZC_DEVICE_HW_TIMESTAMP_UNSYNC (1 << 13) /**< pfring_zc_open_device() flag: do not set hw clock when using PF_RING_ZC_DEVICE_HW_TIMESTAMP */
 
 #define UNDEFINED_QUEUEID 0xFFFFFFFF    /**< pfring_zc_get_queue_id() return val: queue id is not valid */
 #define QUEUE_IS_DEVICE(i) (i > 0xFFFF) /**< pfring_zc_get_queue_id() return val: queue id is an encoded device index */
