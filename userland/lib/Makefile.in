@@ -158,7 +158,6 @@ copy_if_xdp:
 	if test -f $(PWD_ROOT)/../../../linux-6.*/include/uapi/linux/if_xdp.h; then cp $(PWD_ROOT)/../../../linux-6.*/include/uapi/linux/if_xdp.h  $(PF_RING_KERNEL)/linux/; mkdir $(PF_RING_KERNEL)/bpf; cp -f $(PWD_ROOT)/../../../linux-6.*/tools/testing/selftests/bpf/* $(PF_RING_KERNEL)/bpf/; cp -f $(PWD_ROOT)/../../../linux-6.*/tools/lib/bpf/* $(PF_RING_KERNEL)/bpf; fi
 	if test -f $(KERNEL_DIR)/include/uapi/linux/if_xdp.h; then  cp $(KERNEL_DIR)/include/uapi/linux/if_xdp.h $(PF_RING_KERNEL)/linux/; mkdir $(PF_RING_KERNEL)/bpf; cp -f $(KERNEL_DIR)/tools/testing/selftests/bpf/* $(PF_RING_KERNEL)/bpf; cp -f $(KERNEL_DIR)/tools/lib/bpf/* $(PF_RING_KERNEL)/bpf; fi
 	ls -al $(PF_RING_KERNEL)/linux/
-	ls -al $(PF_RING_KERNEL)/bpf/
 
 ${NBPF_LIB}:
 	$(MAKE) -C ../nbpf
