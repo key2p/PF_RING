@@ -29,13 +29,19 @@
 #include <signal.h>
 #include <poll.h>
 
-#include <linux/if_ether.h>
-#include <linux/if_xdp.h>
-#include <linux/if_link.h>
+#include <net/if.h>
+#include <bpf/libbpf.h>
+#include <xdp/xsk.h>
+#include <xdp/libxdp.h>
+
+#ifndef XDP_FLAGS_UPDATE_IF_NOEXIST
+#define XDP_FLAGS_UPDATE_IF_NOEXIST	(1U << 0)
+#define XDP_FLAGS_SKB_MODE		(1U << 1)
+#define XDP_FLAGS_DRV_MODE		(1U << 2)
+#define XDP_FLAGS_HW_MODE		(1U << 3)
+#endif
 
 #include "pfring_priv.h"
-
-#include <bpf/xsk.h>
 
 #ifndef SOL_XDP
 #define SOL_XDP 283
@@ -565,12 +571,19 @@ int pfring_mod_af_xdp_stats(pfring *ring, pfring_stat *stats) {
 static void pfring_mod_af_xdp_remove_xdp_program(struct pf_xdp_handle *handle) {
   u_int32_t curr_prog_id = 0;
 
-  if (bpf_get_link_xdp_id(handle->if_index, &curr_prog_id, XDP_FLAGS_UPDATE_IF_NOEXIST)) {
+//   if (bpf_get_link_xdp_id(handle->if_index, &curr_prog_id, XDP_FLAGS_UPDATE_IF_NOEXIST)) {
+//     fprintf(stderr, "Failure in bpf_get_link_xdp_id\n");
+//     return;
+//   }
+
+  if (bpf_xdp_query_id(handle->if_index, XDP_FLAGS_UPDATE_IF_NOEXIST, &curr_prog_id)) {
     fprintf(stderr, "Failure in bpf_get_link_xdp_id\n");
     return;
   }
 
-  bpf_set_link_xdp_fd(handle->if_index, -1, XDP_FLAGS_UPDATE_IF_NOEXIST);
+  bpf_xdp_attach(handle->if_index, -1, XDP_FLAGS_UPDATE_IF_NOEXIST, NULL);
+  /* Fall back to legacy API */
+  //bpf_set_link_xdp_fd(handle->if_index, -1, XDP_FLAGS_UPDATE_IF_NOEXIST);
 }
 
 /* **************************************************** */

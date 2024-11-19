@@ -74,6 +74,17 @@ drivers/intel/fm10k/fm10k-*-zc/src/ixgbe.mod.c
 drivers/intel/fm10k/fm10k-*-zc/src/modules.order
 drivers/intel/fm10k/fm10k-*-zc/src/fm10k.mod.c
 
+drivers/*
+userland/examples/*
+userland/examples*
+userland/wireshark*
+userland/lib/*.so*
+userland/lib/pfring_mod_*
+userland/libpcap*
+kernel/*.mod
+kernel/*.o.d
+kernel/*.symvers
+
 kernel/modules.order
 kernel/pf_ring.mod.c
 userland/lib/config.h
