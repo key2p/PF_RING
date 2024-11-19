@@ -4050,6 +4050,7 @@ static int hash_pkt_cluster(ring_cluster_element *cluster_ptr,
       break;
     }
     /* else, fall through, because it's like 2-tuple for non-TCP packets */
+    fallthrough;
 
   case cluster_per_flow_2_tuple:
   case cluster_per_inner_flow_2_tuple:
@@ -4860,8 +4861,8 @@ void reserve_memory(unsigned long base, unsigned long mem_len)
 {
   struct page *page, *page_end;
 
-  page_end = virt_to_page(base + mem_len - 1);
-  for(page = virt_to_page(base); page <= page_end; page++)
+  page_end = virt_to_page((void*)base + mem_len - 1);
+  for(page = virt_to_page((void*)base); page <= page_end; page++)
     SetPageReserved(page);
 }
 
@@ -4869,8 +4870,8 @@ void unreserve_memory(unsigned long base, unsigned long mem_len)
 {
   struct page *page, *page_end;
 
-  page_end = virt_to_page(base + mem_len - 1);
-  for(page = virt_to_page(base); page <= page_end; page++)
+  page_end = virt_to_page((void*)base + mem_len - 1);
+  for(page = virt_to_page((void*)base); page <= page_end; page++)
     ClearPageReserved(page);
 }
 
