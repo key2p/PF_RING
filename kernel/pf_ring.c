@@ -2229,10 +2229,16 @@ static int parse_raw_pkt(u_char *data, u_int32_t data_len,
 
   hdr->extended_hdr.parsed_pkt.eth_type = ntohs(eh->h_proto);
 
+  if (hdr->extended_hdr.parsed_pkt.eth_type == 0xd28b /* Arista 7280 */) {
+    struct ethhdr *dummy_eh = (struct ethhdr *) &data[sizeof(struct ethhdr)];
+    displ += 14;
+    hdr->extended_hdr.parsed_pkt.eth_type = ntohs(dummy_eh->h_proto);
+  }
+
   if(hdr->extended_hdr.parsed_pkt.eth_type == ETH_P_8021Q /* 802.1q (VLAN) */) {
     struct eth_vlan_hdr *vh;
 
-    hdr->extended_hdr.parsed_pkt.offset.vlan_offset = sizeof(struct ethhdr);
+    hdr->extended_hdr.parsed_pkt.offset.vlan_offset = displ;
     if (data_len < hdr->extended_hdr.parsed_pkt.offset.vlan_offset + sizeof(struct eth_vlan_hdr)) return(0);
     vh = (struct eth_vlan_hdr *) &data[hdr->extended_hdr.parsed_pkt.offset.vlan_offset];
     hdr->extended_hdr.parsed_pkt.vlan_id = ntohs(vh->h_vlan_id) & VLAN_VID_MASK;
@@ -5784,7 +5790,7 @@ static int do_memory_mmap(struct vm_area_struct *vma, unsigned long start_off, u
   unsigned long start;
 
   /* we do not want to have this area swapped out, lock it */
-#if(LINUX_VERSION_CODE < KERNEL_VERSION(6,3,0))
+#if(LINUX_VERSION_CODE < KERNEL_VERSION(6,3,0) && !(defined(REDHAT_PATCHED_KERNEL) && RHEL_MAJOR >= 9))
   vma->vm_flags |= flags;
 #else
   vm_flags_set(vma, flags);
