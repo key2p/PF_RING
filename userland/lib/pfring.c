@@ -297,8 +297,9 @@ pfring *pfring_open(const char *device_name, u_int32_t caplen, u_int32_t flags) 
   }
 
   if(unlikely(ring->reentrant)) {
-    if (pfring_rwlock_init(&ring->rx_lock, PTHREAD_PROCESS_PRIVATE) != 0 || 
-        pfring_rwlock_init(&ring->tx_lock, PTHREAD_PROCESS_PRIVATE) != 0) {
+    // https://www.ibm.com/docs/en/zos/2.4.0?topic=lf-pthread-rwlock-init-initialize-read-write-lock-object
+    if (pfring_rwlock_init(&ring->rx_lock, NULL) != 0 || 
+        pfring_rwlock_init(&ring->tx_lock, NULL) != 0) {
       errno = ENOTSUP;
       free(ring);
       return NULL;

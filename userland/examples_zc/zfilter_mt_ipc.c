@@ -410,7 +410,7 @@ int main(int argc, char* argv[]) {
   }
 
   while((c = getopt(opt_argc, opt_argv,"ac:dD:g:hi:n:pQ:q:r:P:S:")) != '?') {
-    if((c == 255) || (c == -1)) break;
+    if(((unsigned char)c == 255) || (c == -1)) break;
 
     switch(c) {
     case 'h':

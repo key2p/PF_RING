@@ -19,13 +19,13 @@ INCLUDE    = -I${PFRINGDIR} -I${PFRING_KERNEL} -I${PCAPDIR} `../lib/pfring_confi
 #
 # User and System libraries
 #
-LIBS       = ${LIBPFRING} `../lib/pfring_config --libs` ../libpcap/libpcap.a `../libpcap/pcap-config --additional-libs --static` -lpthread @ZMQ_LIB@ @SYSLIBS@
+LIBS       = ${LIBPFRING} `../lib/pfring_config --libs` ../libpcap/libpcap.a `../libpcap/pcap-config --additional-libs --static` -lpthread   -lrt -ldl
 
 #
 # C compiler and flags
 #
 CC         = ${CROSS_COMPILE}gcc
-CFLAGS     = -Wall -Wno-unused-function -Wno-format-truncation @CFLAGS@ ${INCLUDE} @HAVE_ZMQ@ @HAVE_PF_RING_FT@ @HAVE_PF_RING_ZC@
+CFLAGS     = -Wall -Wno-unused-function -Wno-format-truncation -O2  ${INCLUDE}  -D HAVE_PF_RING_FT -D HAVE_PF_RING_ZC
 
 ifneq (, "$(CUSTOM_INCLUDE)")
 CFLAGS += ${CUSTOM_INCLUDE}
@@ -44,7 +44,7 @@ endif
 #
 PFPROGS   = 
 
-ifneq (@HAVE_PF_RING_ZC@,)
+ifneq (-D HAVE_PF_RING_ZC,)
 	PFPROGS += zcount zbounce zbounce_ipc zpipeline zbalance zsend zcount_ipc zfanout_ipc zbalance_ipc zpipeline_ipc zfifo zreplicator zbalance_DC_ipc zsanitycheck zfilter_mt_ipc zdelay ztime
 endif
 
@@ -104,7 +104,7 @@ ztime: ztime.o ${LIBPFRING} Makefile
 	${CC} ${CFLAGS} ztime.o ${LIBS} -o $@
 
 install: $(TARGETS)
-ifneq (@HAVE_PF_RING_ZC@,)
+ifneq (-D HAVE_PF_RING_ZC,)
 	mkdir -p $(DESTDIR)/usr/bin
 	cp $(TARGETS) $(DESTDIR)/usr/bin/
 endif

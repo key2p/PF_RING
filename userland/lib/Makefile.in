@@ -80,17 +80,28 @@ OBJS =     ${OBJS_MIN} ${PF_RING_FT_OBJS}
 CC        = ${CROSS_COMPILE}gcc
 GCC_MAJ_VERSION=$(shell ${CC} -dumpversion | cut -f1 -d.)
 WFLAGS    = -Wall
+
+ifneq ("clang", "$(CC)")
 ifeq ($(shell test $(GCC_MAJ_VERSION) -ge 5 && echo 1), 1)
 WFLAGS += -Wno-stringop-truncation -Wno-address-of-packed-member
 endif
+endif
+
+ifneq (, "$(CUSTOM_INCLUDE)")
+CFLAGS += ${CUSTOM_INCLUDE}
+endif
+
+ifneq (, "$(CUSTOM_LIBS)")
+LDFLAGS += ${CUSTOM_LIBS}
+endif
 
 CFLAGS_MIN = @CFLAGS@ ${WFLAGS} -fPIC ${INCLUDE} @HAVE_PF_RING_ZC@ @HAVE_AF_XDP@ @HAVE_FIBERBLAZE@ @HAVE_BPF@ @HAVE_HW_TIMESTAMP@ @HAVE_NT@ @HAVE_MLX@ @HAVE_NPCAP@ @HAVE_DL_REDIS@
-CFLAGS += ${CFLAGS_MIN} @HAVE_PF_RING_FT@ 
+CFLAGS += ${CFLAGS_MIN} @HAVE_PF_RING_FT@
 
 EXTRA_DEPS_MIN = extract_nbpf @PF_RING_ZC_DEP@ @AF_XDP_DEP@ @NT_DEP@ @MLX_DEP@ @FIBERBLAZE_DEP@ @NPCAP_DEP@
 EXTRA_DEPS =     ${EXTRA_DEPS_MIN} @PF_RING_FT_DEP@
 
-LDFLAGS   += -g -shared
+LDFLAGS   += -g -shared @BPF_LIB@ 
 SYSLIBS   = -lpthread @SYSLIBS@ @AF_XDP_LIB@ @FIBERBLAZE_LIB@
 
 # How to make an object file

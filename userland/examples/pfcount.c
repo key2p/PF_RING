@@ -1094,7 +1094,7 @@ int main(int argc, char* argv[]) {
   thiszone = gmt_to_local(0);
 
   while((c = getopt(argc,argv,"Bhi:Ic:C:Fd:H:Jl:Lv:ae:n:w:o:p:P:qb:rg:u:mtsSx:f:z:N:MQ:RTUK:0")) != '?') {
-    if((c == 255) || (c == -1)) break;
+    if(((unsigned char)c == 255) || (c == -1)) break;
 
     switch(c) {
     case 'h':

@@ -37,13 +37,13 @@ INCLUDE    = -I${PFRING_KERNEL} -I${PFRINGDIR} -I${PCAPDIR} -Ithird-party `../li
 #
 CC         = ${CROSS_COMPILE}gcc #--platform=native
 WFLAGS     = -Wall -Wno-unused-function -Wno-format-truncation -Wno-address-of-packed-member
-CFLAGS     = @CFLAGS@ ${O_FLAG} ${WFLAGS} ${INCLUDE} @HAVE_BPF@ @HAVE_REDIS@ @HAVE_PF_RING_ZC@ @HAVE_PF_RING_FT@
+CFLAGS     = -O2  ${O_FLAG} ${WFLAGS} ${INCLUDE} -D ENABLE_BPF  -D HAVE_PF_RING_ZC -D HAVE_PF_RING_FT
 # LDFLAGS  =
 
 #
 # User and System libraries
 #
-LIBS       = ${LIBPCAP} ${LIBPFRING} ${LIBPCAP} ${LIBPFRING} `../lib/pfring_config --libs` `../libpcap/pcap-config --additional-libs --static` -lpthread @SYSLIBS@ @REDIS_LIB@ -lrt
+LIBS       = ${LIBPCAP} ${LIBPFRING} ${LIBPCAP} ${LIBPFRING} `../lib/pfring_config --libs` `../libpcap/pcap-config --additional-libs --static` -lpthread  -lrt -ldl  -lrt
 
 ifneq (, "$(CUSTOM_INCLUDE)")
 CFLAGS += ${CUSTOM_INCLUDE}

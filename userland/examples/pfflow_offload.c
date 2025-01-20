@@ -322,7 +322,7 @@ int main(int argc, char* argv[]) {
   flags |= PF_RING_FLOW_OFFLOAD;
 
   while ((c = getopt(argc,argv,"g:hi:r:vq")) != '?') {
-    if ((c == 255) || (c == -1)) break;
+    if (((unsigned char)c == 255) || (c == -1)) break;
 
     switch(c) {
     case 'g':

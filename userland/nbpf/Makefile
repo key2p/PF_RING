@@ -1,11 +1,11 @@
 LEX = lex
 YACC = bison
 INCLUDE = -I../lib -I../../kernel
-LIBS=`../lib/pfring_config --libs` -lpthread -lm #@NDPI_LIB@
-CC=@CC@
+LIBS=`../lib/pfring_config --libs` -lpthread -lm #
+CC=gcc
 AR ?= ar
 RANLIB ?= ranlib
-CFLAGS=-Wall -fPIC -O2 ${INCLUDE} #@NDPI_INC@ @HAVE_NDPI@
+CFLAGS=-Wall -fPIC -O2 ${INCLUDE} # 
 CFLAGS+=-Wno-address-of-packed-member
 OBJS=nbpf_mod_rdif.o rules.o tree_match.o parser.o lex.yy.o grammar.tab.o nbpf_mod_fiberblaze.o nbpf_mod_napatech.o
 BPFLIB=libnbpf.a
@@ -18,14 +18,14 @@ ifneq (, "$(CUSTOM_LIBS)")
 LDFLAGS += ${CUSTOM_LIBS}
 endif
 
-all: $(BPFLIB) @NBPF_EXTRA_TARGETS@
+all: $(BPFLIB) nbpftest
 
 $(BPFLIB): $(OBJS)
 	$(AR) rs $@ $(OBJS)
 	$(RANLIB) $@
 
 nbpftest: $(BPFLIB) nbpftest.c
-	${CC} $(CFLAGS) @HAVE_NDPI@ @NDPI_INC@ -g nbpftest.c -o nbpftest @NDPI_LIB@ $(BPFLIB) $(LIBS) $(CUSTOM_LIBS)
+	${CC} $(CFLAGS)   -g nbpftest.c -o nbpftest  $(BPFLIB) $(LIBS) $(CUSTOM_LIBS)
 
 lex.yy.c: scanner.l grammar.tab.h
 	$(LEX) scanner.l

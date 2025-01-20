@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
   int bind_core = 0;
 
   while ((c = getopt(argc,argv,"b:c:g:h")) != '?') {
-    if ((c == 255) || (c == -1)) break;
+    if (((unsigned char)c == 255) || (c == -1)) break;
 
     switch (c) {
     case 'b':

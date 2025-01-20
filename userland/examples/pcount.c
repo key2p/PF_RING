@@ -403,7 +403,7 @@ int main(int argc, char* argv[]) {
   thiszone = gmt_to_local(0);
 
   while((c = getopt(argc,argv,"e:hi:l:v:f:S")) != '?') {
-    if((c == 255) || (c == -1)) break;
+    if(((unsigned char)c == 255) || (c == -1)) break;
 
     switch(c) {
     case 'h':

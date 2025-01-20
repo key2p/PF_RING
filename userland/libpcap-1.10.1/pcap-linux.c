@@ -1107,7 +1107,7 @@ pcap_activate_linux(pcap_t *handle)
 
 			if (getenv("PCAP_PF_RING_RECV_ONLY")) pfring_set_socket_mode(handle->ring, recv_only_mode);
 
-			if (clusterId = getenv("PCAP_PF_RING_CLUSTER_ID")) {
+			if ((clusterId = getenv("PCAP_PF_RING_CLUSTER_ID"))) {
 				if (atoi(clusterId) > 0 && atoi(clusterId) < 255) {
 					if (getenv("PCAP_PF_RING_USE_CLUSTER_PER_FLOW"))
 						pfring_set_cluster(handle->ring, atoi(clusterId), cluster_per_flow);
@@ -1140,16 +1140,16 @@ pcap_activate_linux(pcap_t *handle)
 				}
 			}
 
-			if (appname = getenv("PCAP_PF_RING_APPNAME"))
+			if ((appname = getenv("PCAP_PF_RING_APPNAME")))
 			if (strlen(appname) > 0 && strlen(appname) <= 32)
 				pfring_set_application_name(handle->ring, appname);
             
-			if (rss_rehash = getenv("PCAP_PF_RING_RSS_REHASH")) {
+			if ((rss_rehash = getenv("PCAP_PF_RING_RSS_REHASH"))) {
 				if (atoi(rss_rehash))
 					pfring_enable_rss_rehash(handle->ring);
 			}
 			pfring_set_poll_watermark(handle->ring, 1 /* watermark */);
-			if (always_sync_fd = getenv("PCAP_PF_RING_ALWAYS_SYNC_FD"))
+			if ((always_sync_fd = getenv("PCAP_PF_RING_ALWAYS_SYNC_FD")))
 				handle->sync_selectable_fd = atoi(always_sync_fd);
 			else
 				handle->sync_selectable_fd = 0;

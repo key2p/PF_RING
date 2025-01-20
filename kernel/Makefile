@@ -48,12 +48,19 @@ endif
 
 EXTRA_CFLAGS += -Wno-implicit-fallthrough
 
+ifeq ("clang", "$(CC)")
+  EXTRA_CFLAGS += -Wno-unused-command-line-argument
+endif
+
 HERE=${PWD}
 
 # set the install path
 INSTDIR := $(DESTDIR)/lib/modules/$(BUILD_KERNEL)/kernel/net/pf_ring
 TARGETDIR := $(DESTDIR)/usr/src/$(BUILD_KERNEL)/include/linux/
-KERNEL_SRC := /lib/modules/$(BUILD_KERNEL)/build
+
+ifeq (,$(KERNEL_SRC))
+  KERNEL_SRC=/lib/modules/$(BUILD_KERNEL)/build
+endif
 
 all: Makefile pf_ring.c linux/pf_ring.h
 #	@if test "$(USER)" = "root"; then \

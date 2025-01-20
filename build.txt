@@ -1,0 +1,85 @@
+export KERNEL_BASE_VER=6.12
+export XANMOD_PATCH_VER=6.12.10-xanmod1
+export BUILD_TYPE=cloud
+export KERNEL_BASE_URL=https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KERNEL_BASE_VER}.tar.xz
+export XANMOD_PATCH=https://sourceforge.net/projects/xanmod/files/releases/main/${XANMOD_PATCH_VER}/patch-${XANMOD_PATCH_VER}.xz/download
+export PATH="/opt/llvm19_krl/llvm-19.1.4-x86_64/bin/:$PATH"
+
+export WORK_DIR=/dev/shm/build_linux
+sudo -E rm -rf $WORK_DIR || true
+
+cd /dev/shm
+bash /dev/shm/build_xanmod_kernel.sh
+
+
+cd $WORK_DIR/linux-${KERNEL_BASE_VER}/
+export PAREL_BUILD=12
+
+echo "start build" >> /deb/shm/build.log
+date >> /deb/shm/build.log
+
+make KDEB_COMPRESS=xz bindeb-pkg -j${PAREL_BUILD} LLVM=1 LLVM_IAS=1
+
+echo "end build" >> /deb/shm/build.log
+date >> /deb/shm/build.log
+
+
+make -C ./tools/bpf DESTDIR=$tools_destdir prefix=/usr install  NO_LIBZSTD=1 NO_LIBPERL=1 NO_LIBBABELTRACE=1
+
+date; make olddefconfig LLVM=1 LLVM_IAS=1
+date; make KDEB_COMPRESS=xz bindeb-pkg -j${PAREL_BUILD} LLVM=1 LLVM_IAS=1
+
+export PFRING_DIR=/dev/shm/PF_RING
+cd $PFRING_DIR
+
+make CC=clang  LLVM=1 LLVM_IAS=1 BUILD_KERNEL=${XANMOD_PATCH_VER} DESTDIR=$TOOLS_DIR prefix=/usr CUSTOM_INCLUDE="-I$TOOLS_DIR/usr/include" CUSTOM_LIBS="-L$TOOLS_DIR/usr/lib64" LEXLIB= install
+
+
+export XANMOD_PATCH_VER=6.12.5-x64v2-xanmod1
+
+export WORK_DIR=/dev/shm/cbuild_linux
+export TOOLS_DIR=${WORK_DIR}/linux-tools-tmp
+mkdir -p $TOOLS_DIR || true
+
+export LIBBPF_VERSION=1.5.0
+export LIBXDP_VERSION=1.5.1
+
+export LIBBPF_DIR=$WORK_DIR/libbpf-${LIBBPF_VERSION}
+curl -L https://github.com/libbpf/libbpf/archive/refs/tags/v${LIBBPF_VERSION}.tar.gz  -o /dev/shm/libbpf.tar.gz
+cd $WORK_DIR/
+tar -zxvf  /dev/shm/libbpf.tar.gz; rm /dev/shm/libbpf.tar.gz
+cd ${LIBBPF_DIR}/src
+make CC=clang  LLVM=1 LLVM_IAS=1 DESTDIR=$TOOLS_DIR install
+
+curl -L https://github.com/xdp-project/xdp-tools/archive/refs/tags/v${LIBXDP_VERSION}.tar.gz -o /dev/shm/libxdp.tar.gz
+cd $WORK_DIR/
+tar -zxvf  /dev/shm/libxdp.tar.gz; rm /dev/shm/libxdp.tar.gz
+cd $WORK_DIR/xdp-tools-${LIBXDP_VERSION}
+
+export LIBBPF_UNBUILT=1
+export LIBBPF_INCLUDE_DIR=$TOOLS_DIR/usr/include
+export LIBBPF_LIB_DIR=$TOOLS_DIR/usr/lib64
+export BPFTOOL=$TOOLS_DIR/usr/sbin/bpftool
+
+export PRODUCTION=1
+export DYNAMIC_LIBXDP=1
+./configure
+
+make VERBOSE=1 CC=clang-18  CLANG=clang-18 LLC=llc-18 LLVM=1 LLVM_IAS=1 DESTDIR=$TOOLS_DIR prefix=/usr PREFIX=/usr LIBDIR=/usr/lib64 install
+
+
+
+export KERNEL_BASE_VER=linux-6.12
+export WORK_DIR=/dev/shm/build_linux
+
+KERNELRELEASE=$(cat ${WORK_DIR}/${KERNEL_BASE_VER}/include/config/kernel.release)
+TOOLS_DIR=$WORK_DIR/${KERNEL_BASE_VER}/linux-tools-tmp
+
+
+cd $WORK_DIR/PF_RING-stable/userland;
+make CC=clang LLVM=1 LLVM_IAS=1 BUILD_KERNEL=${KERNELRELEASE} DESTDIR=$TOOLS_DIR prefix=/usr CUSTOM_INCLUDE="-I$TOOLS_DIR/usr/include" CUSTOM_LIBS="-L$TOOLS_DIR/usr/lib64" LEXLIB= pcap tcpdump
+make CC=clang LLVM=1 LLVM_IAS=1 BUILD_KERNEL=${KERNELRELEASE} DESTDIR=$TOOLS_DIR prefix=/usr CUSTOM_INCLUDE="-I$TOOLS_DIR/usr/include" CUSTOM_LIBS="-L$TOOLS_DIR/usr/lib64" LEXLIB= install
+
+cd $WORK_DIR/PF_RING-stable/kernel;
+make CC=clang LLVM=1 LLVM_IAS=1 BUILD_KERNEL=${KERNELRELEASE} KERNEL_SRC=${WORK_DIR}/${KERNEL_BASE_VER} DESTDIR=$TOOLS_DIR prefix=/usr
+make CC=clang LLVM=1 LLVM_IAS=1 BUILD_KERNEL=${KERNELRELEASE} KERNEL_SRC=${WORK_DIR}/${KERNEL_BASE_VER} DESTDIR=$TOOLS_DIR prefix=/usr install 

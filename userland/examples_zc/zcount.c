@@ -286,7 +286,7 @@ int main(int argc, char* argv[]) {
   flags = PF_RING_ZC_DEVICE_CAPTURE_INJECTED;
 
   while((c = getopt(argc,argv,"ac:d:f:g:hi:v:CDMRHs:S:TtX")) != '?') {
-    if((c == 255) || (c == -1)) break;
+    if(((unsigned char)c == 255) || (c == -1)) break;
 
     switch(c) {
     case 'h':

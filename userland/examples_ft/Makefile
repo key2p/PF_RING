@@ -11,8 +11,8 @@ LIBPFRING  = ${PFRINGDIR}/libpfring.a
 #
 # PF_RING aware libpcap
 #
-O_FLAG     = -DHAVE_PF_RING @HAVE_NDPI@
-EXTRA_LIBS = @NDPI_LIB@
+O_FLAG     = -DHAVE_PF_RING 
+EXTRA_LIBS = 
 PCAPDIR    = ../libpcap
 LIBPCAP    = ${PCAPDIR}/libpcap.a  ${EXTRA_LIBS}
 
@@ -20,7 +20,7 @@ LIBPCAP    = ${PCAPDIR}/libpcap.a  ${EXTRA_LIBS}
 # Search directories
 #
 PFRING_KERNEL=../../kernel
-INCLUDE    = -I${PFRING_KERNEL} -I${PFRINGDIR} -I${PCAPDIR} -Ithird-party `../lib/pfring_config --include` @NDPI_INC@
+INCLUDE    = -I${PFRING_KERNEL} -I${PFRINGDIR} -I${PCAPDIR} -Ithird-party `../lib/pfring_config --include` 
 
 #
 # C compiler and flags
@@ -30,12 +30,12 @@ INCLUDE    = -I${PFRING_KERNEL} -I${PFRINGDIR} -I${PCAPDIR} -Ithird-party `../li
 #
 CC         = ${CROSS_COMPILE}gcc #--platform=native
 WFLAGS     = -Wall -Wno-unused-function -Wno-format-truncation -Wno-address-of-packed-member
-CFLAGS     = @CFLAGS@ ${O_FLAG} ${WFLAGS} ${INCLUDE} @HAVE_PF_RING_FT@
+CFLAGS     = -O2  ${O_FLAG} ${WFLAGS} ${INCLUDE} -D HAVE_PF_RING_FT
 
 #
 # User and System libraries
 #
-LIBS       = ${LIBPCAP} ${LIBPFRING} ${LIBPCAP} ${LIBPFRING} `../lib/pfring_config --libs` `../libpcap/pcap-config --additional-libs --static` -lpthread @SYSLIBS@ -lrt -lm
+LIBS       = ${LIBPCAP} ${LIBPFRING} ${LIBPCAP} ${LIBPFRING} `../lib/pfring_config --libs` `../libpcap/pcap-config --additional-libs --static` -lpthread  -lrt -ldl -lrt -lm
 
 ifneq (, "$(CUSTOM_INCLUDE)")
 CFLAGS += ${CUSTOM_INCLUDE}
@@ -56,9 +56,9 @@ endif
 # Main targets
 #
 FTPROGS = 
-ifneq (@HAVE_PF_RING_FT@,)
+ifneq (-D HAVE_PF_RING_FT,)
 FTPROGS = ftflow ftflow_pcap fttest
-ifneq (@HAVE_HYPERSCAN@,)
+ifneq (,)
 LIBS   += /usr/local/lib/libhs.a
 CFLAGS += -I/usr/local/include/hs/
 endif
@@ -78,7 +78,7 @@ fttest: fttest.o ${LIBPFRING}
 	${CC} ${CFLAGS} fttest.o ${LIBS} -o $@
 
 install: ${TARGETS}
-ifneq (@HAVE_PF_RING_FT@,)
+ifneq (-D HAVE_PF_RING_FT,)
 	mkdir -p $(DESTDIR)/usr/bin
 	cp $(TARGETS) $(DESTDIR)/usr/bin/
 endif

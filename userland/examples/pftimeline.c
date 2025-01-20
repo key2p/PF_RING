@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
   u_int32_t version;
 
   while((c = getopt(argc,argv,"ht:f:b:e:o:")) != '?') {
-    if ((c == 255) || (c == -1)) break;
+    if (((unsigned char)c == 255) || (c == -1)) break;
 
     switch(c) {
     case 'b':

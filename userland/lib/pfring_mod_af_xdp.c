@@ -959,6 +959,7 @@ int pfring_mod_af_xdp_open(pfring *ring) {
 
   if (pfring_mod_af_xdp_xsk_configure(ring)) {
     fprintf(stderr, "Failed to configure xdp socket\n");
+	rc = -1;
     goto free_handle;
   }
 

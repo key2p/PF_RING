@@ -1077,7 +1077,7 @@ int main(int argc, char* argv[]) {
   }
 
   while ((c = getopt(opt_argc, opt_argv, opt_string)) != '?') {
-    if ((c == 255) || (c == -1)) break;
+    if (((unsigned char)c == 255) || (c == -1)) break;
 
     switch (c) {
     case 'a':
@@ -1331,7 +1331,7 @@ int main(int argc, char* argv[]) {
   while ((c = getopt(opt_argc, opt_argv, opt_string)) != '?') {
     int q_idx;
     char *v_ptr;
-    if ((c == 255) || (c == -1)) break;
+    if (((unsigned char)c == 255) || (c == -1)) break;
     switch (c) {
       case 'G':
         q_idx = atoi(optarg);

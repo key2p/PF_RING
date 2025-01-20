@@ -36,6 +36,17 @@ AC_CHECK_HEADERS(fcntl.h rpc/rpc.h rpc/rpcent.h net/if.h)
 dnl> PF_RING
 LIBS="$LIBS ../lib/libpfring.a -lpthread `../lib/pfring_config --libs`"
 
+$as_echo "check pfring ${CUSTOM_LIBS} x${CUSTOM_INCLUDE} x${LIBS}"
+
+if test "x$CUSTOM_INCLUDE" != "x"; then
+  CFLAGS = "${CUSTOM_INCLUDE} ${CFLAGS}"
+fi
+
+if test "x$CUSTOM_LIBS" != "x"; then
+  LDFLAGS = "${CUSTOM_LIBS} ${LDFLAGS}"
+  LIBS = "${CUSTOM_LIBS} ${LIBS}"
+fi
+
 case "$host_os" in
 
 darwin*)

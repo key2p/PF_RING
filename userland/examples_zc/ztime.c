@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
   int read_time = 1;
 
   while((c = getopt(argc,argv,"c:d:hi:vDs:t")) != '?') {
-    if((c == 255) || (c == -1)) break;
+    if(((unsigned char)c == 255) || (c == -1)) break;
 
     switch(c) {
     case 'h':

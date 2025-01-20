@@ -289,7 +289,7 @@ int main(int argc, char* argv[]) {
   startTime.tv_sec = 0;
 
   while((c = getopt(argc,argv,"ac:g:hi:n:S:q:P:")) != '?') {
-    if((c == 255) || (c == -1)) break;
+    if(((unsigned char)c == 255) || (c == -1)) break;
 
     switch(c) {
     case 'h':

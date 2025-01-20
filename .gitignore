@@ -75,8 +75,8 @@ drivers/intel/fm10k/fm10k-*-zc/src/modules.order
 drivers/intel/fm10k/fm10k-*-zc/src/fm10k.mod.c
 
 drivers/*
-userland/examples/*
-userland/examples*
+#userland/examples/
+#userland/examples
 userland/wireshark*
 userland/lib/*.so*
 userland/lib/pfring_mod_*
@@ -102,7 +102,7 @@ userland/libpcap-*-ring/tokdefs.h
 userland/libpcap-*-ring/version.c
 userland/libpcap-*-ring/version.h
 
-userland/libpcap-*/Makefile
+#userland/libpcap-*/Makefile
 userland/libpcap-*/bpf_filter.c
 userland/libpcap-*/config.h
 userland/libpcap-*/grammar.c
@@ -162,9 +162,9 @@ userland/lib/libpfring.so
 !/Makefile
 !/.pc/
 
-userland/c++/Makefile
-userland/examples/Makefile
-userland/examples_zc/Makefile
+#userland/c++/Makefile
+#userland/examples/Makefile
+#userland/examples_zc/Makefile
 userland/examples_zc/zsanitycheck
 userland/lib/Makefile
 userland/lib/nbpf.h
@@ -174,7 +174,7 @@ userland/lib/pfring_mod_myricom.h
 userland/lib/pfring_mod_nt.h
 userland/lib/pfring_mod_timeline.h
 
-userland/nbpf/Makefile
+#userland/nbpf/Makefile
 userland/nbpf/grammar.tab.c
 userland/nbpf/grammar.tab.h
 userland/nbpf/lex.yy.c
