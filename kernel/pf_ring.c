@@ -146,6 +146,11 @@
 #define GIT_REV "unknown"
 #endif
 
+#if(LINUX_VERSION_CODE >= KERNEL_VERSION(6,17,0))
+#undef dev_get_flags
+#define dev_get_flags netif_get_flags
+#endif
+
 #if(LINUX_VERSION_CODE < KERNEL_VERSION(3,10,0))
 #define PDE_DATA(a) PDE(a)->data
 #elif((LINUX_VERSION_CODE >= KERNEL_VERSION(5,17,0)) || (defined(REDHAT_PATCHED_KERNEL) && (LINUX_VERSION_CODE >= KERNEL_VERSION(5,14,0))))
